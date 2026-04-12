@@ -1,5 +1,5 @@
 /* ===================== MOCK DATA =====================
-   NOTE FOR DEVELOPERS:
+   NOTE FOR BACKEND DATABASE:
    Replace all arrays below with actual fetch() calls to your backend API.
    Example:
      const bookings = await fetch('/api/bookings').then(r => r.json());
@@ -16,7 +16,7 @@ const MC_DATA = {
     { id: 'BK-001', client: 'Santos Family', event: 'Wedding Reception', date: '2025-07-12', guests: 150, package: 'Premium', status: 'confirmed', venue: 'Grand Ballroom, Lipa City' },
     { id: 'BK-002', client: 'ABC Corporation', event: 'Corporate Seminar', date: '2025-07-18', guests: 80, package: 'Standard', status: 'confirmed', venue: 'Hotel Miramar, Batangas' },
     { id: 'BK-003', client: 'Reyes Family', event: 'Birthday Party', date: '2025-07-22', guests: 60, package: 'Basic', status: 'pending', venue: 'Reyes Residence, Lipa' },
-    { id: 'BK-004', client: 'PUP Lipa', event: 'Graduation Ceremony', date: '2025-07-25', guests: 200, package: 'Standard', status: 'confirmed', venue: 'PUP Gymnasium' },
+    { id: 'BK-004', client: 'PUP', event: 'Graduation Ceremony', date: '2025-07-25', guests: 200, package: 'Standard', status: 'confirmed', venue: 'PUP Gymnasium' },
     { id: 'BK-005', client: 'Cruz Family', event: 'Debut Celebration', date: '2025-08-03', guests: 100, package: 'Premium', status: 'pending', venue: 'Fiesta Garden, Lipa' },
     { id: 'BK-006', client: 'Dela Cruz Co.', event: 'Company Anniversary', date: '2025-08-10', guests: 120, package: 'Premium', status: 'confirmed', venue: 'Event Hall, Batangas City' },
     { id: 'BK-007', client: 'Garcia Family', event: 'Family Reunion', date: '2025-06-30', guests: 75, package: 'Standard', status: 'completed', venue: 'Garcia Farm, Lipa' },
