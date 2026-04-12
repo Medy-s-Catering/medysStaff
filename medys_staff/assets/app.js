@@ -20,7 +20,7 @@ const MC_DATA = {
     { id: 'BK-005', client: 'Cruz Family', event: 'Debut Celebration', date: '2025-08-03', guests: 100, package: 'Premium', status: 'pending', venue: 'Fiesta Garden, Lipa' },
     { id: 'BK-006', client: 'Dela Cruz Co.', event: 'Company Anniversary', date: '2025-08-10', guests: 120, package: 'Premium', status: 'confirmed', venue: 'Event Hall, Batangas City' },
     { id: 'BK-007', client: 'Garcia Family', event: 'Family Reunion', date: '2025-06-30', guests: 75, package: 'Standard', status: 'completed', venue: 'Garcia Farm, Lipa' },
-    { id: 'BK-008', client: 'Lim Family', event: 'Birthday Party', date: '2025-06-15', guests: 50, package: 'Basic', status: 'cancelled', venue: 'Lim Residence' },
+    { id: 'BK-008', client: 'Lima Family', event: 'Birthday Party', date: '2025-06-15', guests: 50, package: 'Basic', status: 'cancelled', venue: 'Lim Residence' },
   ],
 
   feedback: [
