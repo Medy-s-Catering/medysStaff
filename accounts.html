@@ -99,12 +99,19 @@
 
   <script src="assets/app.js"></script>
   <script>
-    // Mock staff data — replace with fetch from /api/accounts
+    /* =====================================================
+       DATABASE NOTE: Replace this MC_STAFF array with a real API call:
+         const MC_STAFF = await fetch('/api/accounts', {
+           headers: { 'Authorization': 'Bearer ' + sessionStorage.getItem('mc_token') }
+         }).then(r => r.json());
+       REMOVE this array when connected to the database.
+       Table: users(id, full_name, username, email, role, status, created_at)
+       ===================================================== */
     const MC_STAFF = [
-      { id: 1, name: 'Admin User', username: 'admin', email: 'admin@medyscatering.com', role: 'admin', status: 'active' },
-      { id: 2, name: 'Staff User', username: 'staff', email: 'staff@medyscatering.com', role: 'staff', status: 'active' },
-      { id: 3, name: 'Maria Reyes', username: 'maria', email: 'maria@medyscatering.com', role: 'staff', status: 'active' },
-      { id: 4, name: 'Juan Dela Cruz', username: 'juan', email: 'juan@medyscatering.com', role: 'staff', status: 'inactive' },
+      { id: 1, name: 'Admin User',    username: 'admin', email: 'admin@medyscatering.com', role: 'admin', status: 'active' },
+      { id: 2, name: 'Staff User',    username: 'staff', email: 'staff@medyscatering.com', role: 'staff', status: 'active' },
+      { id: 3, name: 'Maria Reyes',   username: 'maria', email: 'maria@medyscatering.com', role: 'staff', status: 'active' },
+      { id: 4, name: 'Juan Dela Cruz',username: 'juan',  email: 'juan@medyscatering.com',  role: 'staff', status: 'inactive' },
     ];
 
     function initials(name) {

@@ -140,54 +140,83 @@
       selectedRole = role;
       document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
       el.classList.add('active');
+  
+      document.getElementById('loginError').classList.add('d-none');
     }
 
     function togglePw() {
-      const pw = document.getElementById('password');
+      const pw   = document.getElementById('password');
       const icon = document.getElementById('pwIcon');
-      const isText = pw.type == 'text';
-      pw.type = isText ? 'password' : 'text';
-      icon.className = isText ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill';
+      const show = pw.type === 'password';
+      pw.type        = show ? 'text' : 'password';
+      icon.className = show ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill';
     }
 
     function handleLogin(e) {
       e.preventDefault();
-      const u = document.getElementById('username').value.trim();
-      const p = document.getElementById('password').value;
+      const u   = document.getElementById('username').value.trim();
+      const p   = document.getElementById('password').value;
       const err = document.getElementById('loginError');
 
-      /* =====================================================
-         DATABASE NOTE:
-         Replace this mock check with an actual API call:
-         
-         const res = await fetch('/api/auth/login', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ username: u, password: p, role: selectedRole })
-         });
-         const data = await res.json();
-         if (data.token) {
-           sessionStorage.setItem('mc_token', data.token);
-           sessionStorage.setItem('mc_user', JSON.stringify(data.user));
-           window.location.href = 'dashboard.html';
-         } else {
-           err.classList.remove('d-none');
-         }
-         ===================================================== */
+      // /* =====================================================
+      //    DATABASE NOTE (replace entire block below for production):
 
-      // Mock auth — remove in production
-      const valid =
-        (selectedRole == 'admin' && u == 'admin' && p == 'admin123') ||
-        (selectedRole == 'staff' && u == 'staff' && p == 'staff123');
+      //    WHAT TO REPLACE:
+      //      Remove the "Mock auth" block and the demo credentials div above.
+
+      //    REPLACE WITH:
+      //      const res = await fetch('/api/auth/login', {
+      //        method: 'POST',
+      //        headers: { 'Content-Type': 'application/json' },
+      //        body: JSON.stringify({ username: u, password: p, role: selectedRole })
+      //      });
+      //      const data = await res.json();
+      //      if (data.token) {
+      //        sessionStorage.clear();
+      //        sessionStorage.setItem('mc_token', data.token);      // JWT token
+      //        sessionStorage.setItem('mc_user', JSON.stringify(data.user)); // { name, role, initials }
+      //        window.location.href = 'dashboard.html';
+      //      } else {
+      //        err.classList.remove('d-none');
+      //      }
+
+      //    ALSO REMOVE:
+      //      - The demo credentials <div> block above (marked <!-- REMOVE this demo block in production -->)
+      //      - The login-divider and demo div above the closing </div>
+      //    ===================================================== */
+
+      // /* ── MOCK AUTH — REMOVE IN PRODUCTION ──
+      //    Each role has its own fixed credentials.
+      //    Staff can ONLY log in as staff; admin can ONLY log in as admin.
+      //    The selectedRole variable ensures the correct role is always saved to session.
+      // */
+      const accounts = {
+        admin: { username: 'admin', password: 'admin123', name: 'Admin User', initials: 'AU' },
+        staff: { username: 'staff', password: 'staff123', name: 'Staff User', initials: 'SU' },
+      };
+
+      const account = accounts[selectedRole];
+      const valid   = account && u === account.username && p === account.password;
 
       if (valid) {
-        sessionStorage.setItem('mc_role', selectedRole);
-        sessionStorage.setItem('mc_user', JSON.stringify({ name: selectedRole == 'admin' ? 'Admin User' : 'Staff User', role: selectedRole, initials: selectedRole == 'admin' ? 'AU' : 'SU' }));
+        sessionStorage.clear(); 
+        sessionStorage.setItem('mc_user', JSON.stringify({
+          name:     account.name,
+          role:     selectedRole,   
+          initials: account.initials
+        }));
         window.location.href = 'dashboard.html';
       } else {
         err.classList.remove('d-none');
+        document.getElementById('password').value = ''; 
       }
     }
+
+    (function checkExistingSession() {
+      if (sessionStorage.getItem('mc_user')) {
+        window.location.replace('dashboard.html');
+      }
+    })();
   </script>
 </body>
 
