@@ -196,7 +196,7 @@
       };
 
       const account = accounts[selectedRole];
-      const valid   = account && u === account.username && p === account.password;
+      const valid   = account && u == account.username && p == account.password;
 
       if (valid) {
         sessionStorage.clear(); 
