@@ -27,7 +27,7 @@ const MC_DATA = {
     { id: 1, client: 'Santos Family', event: 'Wedding Reception', date: '2025-07-13', rating: 5, comment: 'Everything was perfect! The food was amazing and the staff were very professional.', status: 'new' },
     { id: 2, client: 'ABC Corporation', event: 'Corporate Seminar', date: '2025-07-19', rating: 4, comment: 'Great service and timely setup. Food was delicious. Would recommend!', status: 'read' },
     { id: 3, client: 'Garcia Family', event: 'Family Reunion', date: '2025-07-01', rating: 5, comment: 'Medy\'s Catering never disappoints. Will definitely book again.', status: 'read' },
-    { id: 4, client: 'PUP Lipa', event: 'Graduation Ceremony', date: '2025-07-26', rating: 4, comment: 'The coordination was smooth and the food was well-received by everyone.', status: 'new' },
+    { id: 4, client: 'PUP', event: 'Graduation Ceremony', date: '2025-07-26', rating: 4, comment: 'The coordination was smooth and the food was well-received by everyone.', status: 'new' },
   ]
 };
 
