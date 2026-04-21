@@ -10,7 +10,7 @@
 (function authGuard() {
   const publicPages = ['login.html', 'index.html', ''];
   const currentPage = window.location.pathname.split('/').pop();
-  if (publicPages.includes(currentPage)) return; 
+  if (publicPages.includes(currentPage)) return;
 
   const sessionUser = sessionStorage.getItem('mc_user');
   if (!sessionUser) {
@@ -57,28 +57,32 @@ const MC_DATA = {
   currentUser: _getSessionUser(),
 
   bookings: [
-    /* DATABASE NOTE: Replace this array with fetch('/api/bookings') */
-    { id: 'BK-001', client: 'Santos Family',  event: 'Wedding Reception',  date: '2025-07-12', guests: 150, package: 'Premium',  status: 'confirmed', venue: 'Grand Ballroom, Lipa City' },
-    { id: 'BK-002', client: 'ABC Corporation',event: 'Corporate Seminar',   date: '2025-07-18', guests: 80,  package: 'Standard', status: 'confirmed', venue: 'Hotel Miramar, Batangas' },
-    { id: 'BK-003', client: 'Reyes Family',   event: 'Birthday Party',      date: '2025-07-22', guests: 60,  package: 'Basic',    status: 'pending',   venue: 'Reyes Residence, Lipa' },
-    { id: 'BK-004', client: 'PUP',            event: 'Graduation Ceremony', date: '2025-07-25', guests: 200, package: 'Standard', status: 'confirmed', venue: 'PUP Gymnasium' },
-    { id: 'BK-005', client: 'Cruz Family',    event: 'Debut Celebration',   date: '2025-08-03', guests: 100, package: 'Premium',  status: 'pending',   venue: 'Fiesta Garden, Lipa' },
-    { id: 'BK-006', client: 'Dela Cruz Co.',  event: 'Company Anniversary', date: '2025-08-10', guests: 120, package: 'Premium',  status: 'confirmed', venue: 'Event Hall, Batangas City' },
-    { id: 'BK-007', client: 'Garcia Family',  event: 'Family Reunion',      date: '2025-06-30', guests: 75,  package: 'Standard', status: 'completed', venue: 'Garcia Farm, Lipa' },
-    { id: 'BK-008', client: 'Lima Family',    event: 'Birthday Party',      date: '2025-06-15', guests: 50,  package: 'Basic',    status: 'cancelled', venue: 'Lim Residence' },
+    /* DATABASE NOTE: Replace this array with fetch('/api/bookings')
+       Full fields: id, client, event, date, time, guests, package, venue,
+       email, phone, duration, decoration, theme, special_requests, status */
+    { id: 'BK-001', client: 'Santos Family', event: 'Wedding / Reception', date: '2025-07-12', time: '14:00', guests: 150, package: 'Premium', status: 'confirmed', venue: 'Grand Ballroom, Lipa City', email: '', phone: '' },
+    { id: 'BK-002', client: 'ABC Corporation', event: 'Corporate Event', date: '2025-07-18', time: '09:00', guests: 80, package: 'Standard', status: 'confirmed', venue: 'Hotel Miramar, Batangas', email: '', phone: '' },
+    { id: 'BK-003', client: 'Reyes Family', event: 'Birthday / Debut', date: '2025-07-22', time: '16:00', guests: 60, package: 'Basic', status: 'pending', venue: 'Reyes Residence, Lipa', email: '', phone: '' },
+    { id: 'BK-004', client: 'PUP', event: 'School Activity', date: '2025-07-25', time: '10:00', guests: 200, package: 'Standard', status: 'confirmed', venue: 'PUP Gymnasium', email: '', phone: '' },
+    { id: 'BK-005', client: 'Cruz Family', event: 'Birthday / Debut', date: '2025-08-03', time: '17:00', guests: 100, package: 'Premium', status: 'pending', venue: 'Fiesta Garden, Lipa', email: '', phone: '' },
+    { id: 'BK-006', client: 'Dela Cruz Co.', event: 'Corporate Event', date: '2025-08-10', time: '09:00', guests: 120, package: 'Premium', status: 'confirmed', venue: 'Event Hall, Batangas City', email: '', phone: '' },
+    { id: 'BK-007', client: 'Garcia Family', event: 'Family Reunion', date: '2025-06-30', time: '11:00', guests: 75, package: 'Standard', status: 'completed', venue: 'Garcia Farm, Lipa', email: '', phone: '' },
+    { id: 'BK-008', client: 'Lima Family', event: 'Birthday / Debut', date: '2025-06-15', time: '15:00', guests: 50, package: 'Basic', status: 'cancelled', venue: 'Lim Residence', email: '', phone: '' },
   ],
 
   feedback: [
-    /* DATABASE NOTE: Replace this array with fetch('/api/feedback') */
-    { id: 1, client: 'Santos Family',   event: 'Wedding Reception',  date: '2025-07-13', rating: 5, comment: 'Everything was perfect! The food was amazing and the staff were very professional.', status: 'new' },
-    { id: 2, client: 'ABC Corporation', event: 'Corporate Seminar',  date: '2025-07-19', rating: 4, comment: 'Great service and timely setup. Food was delicious. Would recommend!',               status: 'read' },
-    { id: 3, client: 'Garcia Family',   event: 'Family Reunion',     date: '2025-07-01', rating: 5, comment: "Medy's Catering never disappoints. Will definitely book again.",                    status: 'read' },
-    { id: 4, client: 'PUP',             event: 'Graduation Ceremony',date: '2025-07-26', rating: 4, comment: 'The coordination was smooth and the food was well-received by everyone.',           status: 'new' },
+    /* DATABASE NOTE: Replace this array with fetch('/api/feedback')
+       Fields match medysBook/feedback.html: client_name→client, event_type, star_rating,
+       comments, email, has_booked, liked_tags, date_submitted, status */
+    { id: 1, client: 'Santos Family', event_type: 'Wedding / Reception', date_submitted: '2025-07-13', star_rating: 5, comments: 'Everything was perfect! The food was amazing and the staff were very professional.', has_booked: 'yes', status: 'new' },
+    { id: 2, client: 'ABC Corporation', event_type: 'Corporate Event', date_submitted: '2025-07-19', star_rating: 4, comments: 'Great service and timely setup. Food was delicious. Would recommend!', has_booked: 'yes', status: 'read' },
+    { id: 3, client: 'Garcia Family', event_type: 'Family Reunion', date_submitted: '2025-07-01', star_rating: 5, comments: "Medy's Catering never disappoints. Will definitely book again.", has_booked: 'yes', status: 'read' },
+    { id: 4, client: 'PUP', event_type: 'School Activity', date_submitted: '2025-07-26', star_rating: 4, comments: 'The coordination was smooth and the food was well-received by everyone.', has_booked: 'yes', status: 'new' },
   ]
 };
 
 function initSidebar() {
-  const toggle  = document.querySelector('.mc-sidebar-toggle');
+  const toggle = document.querySelector('.mc-sidebar-toggle');
   const sidebar = document.querySelector('.mc-sidebar');
   const overlay = document.querySelector('.mc-sidebar-overlay');
 
@@ -141,9 +145,9 @@ function closeModal(id) {
 function statusBadge(status) {
   const map = {
     confirmed: ['mc-badge-confirmed', 'bi-check-circle-fill', 'Confirmed'],
-    pending:   ['mc-badge-pending',   'bi-clock-fill',        'Pending'],
-    cancelled: ['mc-badge-cancelled', 'bi-x-circle-fill',     'Cancelled'],
-    completed: ['mc-badge-completed', 'bi-check2-all',        'Completed'],
+    pending: ['mc-badge-pending', 'bi-clock-fill', 'Pending'],
+    cancelled: ['mc-badge-cancelled', 'bi-x-circle-fill', 'Cancelled'],
+    completed: ['mc-badge-completed', 'bi-check2-all', 'Completed'],
   };
   const [cls, icon, label] = map[status] || ['mc-badge-pending', 'bi-circle', 'Unknown'];
   return `<span class="mc-badge ${cls}"><i class="bi ${icon}"></i>${label}</span>`;
@@ -159,9 +163,9 @@ function fmtDate(str) {
 }
 
 function renderSidebar(activePage) {
-  const isAdmin      = MC_DATA.currentUser.role === 'admin';
+  const isAdmin = MC_DATA.currentUser.role === 'admin';
   const pendingCount = MC_DATA.bookings.filter(b => b.status === 'pending').length;
-  const newFeedback  = MC_DATA.feedback.filter(f => f.status === 'new').length;
+  const newFeedback = MC_DATA.feedback.filter(f => f.status === 'new').length;
 
   return `
   <aside class="mc-sidebar">
@@ -234,7 +238,7 @@ function handleLogout() {
 
 function renderTopbar(title, breadcrumb) {
   const newFeedback = MC_DATA.feedback.filter(f => f.status === 'new').length;
-  const user        = MC_DATA.currentUser;
+  const user = MC_DATA.currentUser;
 
   return `
   <header class="mc-topbar">
