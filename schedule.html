@@ -151,9 +151,9 @@
                 <div style="display:flex;align-items:center;gap:0.5rem;"><span class="mc-legend-dot"
                     style="background:var(--mc-blue);"></span>Corporate Event</div>
                 <div style="display:flex;align-items:center;gap:0.5rem;"><span class="mc-legend-dot"
-                    style="background:var(--mc-gold);"></span>Birthday / Social</div>
+                    style="background:var(--mc-gold);"></span>Birthday / Debut &amp; Reunion</div>
                 <div style="display:flex;align-items:center;gap:0.5rem;"><span class="mc-legend-dot"
-                    style="background:var(--mc-green);"></span>School / Other</div>
+                    style="background:var(--mc-green);"></span>School Activity / Other</div>
               </div>
             </div>
 
@@ -178,10 +178,11 @@
               placeholder="Client name" /></div>
           <div class="col-md-6"><label class="mc-label">Event Type</label>
             <select class="mc-input" id="qType">
-              <option>Wedding Reception</option>
-              <option>Corporate Seminar</option>
-              <option>Birthday Party</option>
-              <option>Graduation Ceremony</option>
+              <option>Corporate Event</option>
+              <option>Wedding / Reception</option>
+              <option>Birthday / Debut</option>
+              <option>School Activity</option>
+              <option>Family Reunion</option>
               <option>Other</option>
             </select>
           </div>
@@ -194,7 +195,11 @@
               <option>Basic</option>
               <option>Standard</option>
               <option>Premium</option>
+              <option>Custom</option>
             </select>
+          </div>
+          <div class="col-md-6"><label class="mc-label">Event Time</label>
+            <input type="time" class="mc-input" id="qTime" />
           </div>
           <div class="col-12"><label class="mc-label">Venue</label><input class="mc-input" id="qVenue"
               placeholder="Event venue address" /></div>
@@ -217,7 +222,7 @@
     function eventColor(type) {
       if (!type) return 'var(--mc-red)';
       const t = type.toLowerCase();
-      if (t.includes('wedding')) return 'var(--mc-red)';
+      if (t.includes('wedding') || t.includes('reception')) return 'var(--mc-red)';
       if (t.includes('corporate') || t.includes('seminar') || t.includes('company') || t.includes('anniversary')) return 'var(--mc-blue)';
       if (t.includes('birthday') || t.includes('debut') || t.includes('reunion') || t.includes('social')) return 'var(--mc-gold)';
       return 'var(--mc-green)';
@@ -274,7 +279,7 @@
         <div style="font-weight:700;font-size:0.9rem;">${e.client}</div>
         <div style="font-size:0.8rem;color:var(--mc-gray);">${e.event}</div>
         <div style="font-size:0.78rem;margin-top:0.3rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
-          <span>${e.guests} guests</span>
+          <span>${e.time ? e.time + ' ·' : ''} ${e.guests} guests</span>
           <span>·</span><span>${e.package}</span>
           <span>·</span>${statusBadge(e.status)}
         </div>
@@ -309,7 +314,7 @@
           </div>
           <div style="flex:1;min-width:0;">
             <div style="font-weight:700;">${b.client}</div>
-            <div style="font-size:0.82rem;color:var(--mc-gray);">${b.event} · ${b.guests} guests · ${b.package}</div>
+            <div style="font-size:0.82rem;color:var(--mc-gray);">${b.event} · ${b.guests} guests · ${b.package}${b.time ? ' · ' + b.time : ''}</div>
             <div style="font-size:0.78rem;color:var(--mc-gray);margin-top:0.2rem;"><i class="bi bi-geo-alt" style="color:var(--mc-red);"></i> ${b.venue}</div>
           </div>
           ${statusBadge(b.status)}
@@ -334,7 +339,8 @@
       MC_DATA.bookings.push({
         id: 'BK-' + String(MC_DATA.bookings.length + 1).padStart(3, '0'),
         client, event: document.getElementById('qType').value,
-        date, guests: parseInt(document.getElementById('qGuests').value) || 0,
+        date, time: document.getElementById('qTime').value || '',
+        guests: parseInt(document.getElementById('qGuests').value) || 0,
         package: document.getElementById('qPackage').value,
         status: 'confirmed',
         venue: document.getElementById('qVenue').value || '—'
