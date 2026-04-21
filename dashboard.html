@@ -122,7 +122,7 @@
       const pending = MC_DATA.bookings.filter(b => b.status == 'pending').length;
       const completed = MC_DATA.bookings.filter(b => b.status == 'completed').length;
       const newFb = MC_DATA.feedback.filter(f => f.status == 'new').length;
-      const avgRating = (MC_DATA.feedback.reduce((a, f) => a + f.rating, 0) / MC_DATA.feedback.length).toFixed(1);
+      const avgRating = (MC_DATA.feedback.reduce((a, f) => a + (f.star_rating || f.rating || 0), 0) / MC_DATA.feedback.length).toFixed(1);
 
       const stats = [
         { icon: 'bi-calendar-check-fill', color: 'red', num: MC_DATA.bookings.length, lbl: 'Total Bookings', sub: `${confirmed} confirmed` },
@@ -179,9 +179,9 @@
     <div style="padding:0.75rem 0;border-bottom:1px solid var(--mc-border);">
       <div style="display:flex;justify-content:space-between;margin-bottom:0.2rem;">
         <strong style="font-size:0.87rem;">${f.client}</strong>
-        <span class="mc-stars" style="font-size:0.8rem;">${starRating(f.rating)}</span>
+        <span class="mc-stars" style="font-size:0.8rem;">${starRating(f.star_rating || f.rating)}</span>
       </div>
-      <p style="font-size:0.8rem;color:var(--mc-gray);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${f.comment}</p>
+      <p style="font-size:0.8rem;color:var(--mc-gray);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${f.comments || f.comment}</p>
       ${f.status == 'new' ? '<span class="mc-badge mc-badge-pending" style="margin-top:0.3rem;display:inline-flex;">New</span>' : ''}
     </div>`).join('');
 

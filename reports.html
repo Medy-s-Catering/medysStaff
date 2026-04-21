@@ -147,7 +147,7 @@
       const total = bookings.length;
       const confirmed = bookings.filter(b => b.status == 'confirmed').length;
       const completed = bookings.filter(b => b.status == 'completed').length;
-      const avgRating = fb.length ? (fb.reduce((a, f) => a + f.rating, 0) / fb.length).toFixed(1) : 0;
+      const avgRating = fb.length ? (fb.reduce((a, f) => a + (f.star_rating || f.rating || 0), 0) / fb.length).toFixed(1) : 0;
       const totalGuests = bookings.reduce((a, b) => a + b.guests, 0);
 
       document.getElementById('reportStats').innerHTML = [
