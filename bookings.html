@@ -78,6 +78,7 @@
                   <th>Client</th>
                   <th>Event Type</th>
                   <th>Date</th>
+                  <th>Time</th>
                   <th>Guests</th>
                   <th>Package</th>
                   <th>Venue</th>
@@ -124,19 +125,21 @@
               <label class="mc-label">Event Type *</label>
               <select id="fEvent" class="mc-input" required>
                 <option value="">Select type...</option>
-                <option>Wedding Reception</option>
-                <option>Corporate Seminar</option>
-                <option>Birthday Party</option>
-                <option>Debut Celebration</option>
-                <option>Graduation Ceremony</option>
+                <option>Corporate Event</option>
+                <option>Wedding / Reception</option>
+                <option>Birthday / Debut</option>
+                <option>School Activity</option>
                 <option>Family Reunion</option>
-                <option>Company Anniversary</option>
                 <option>Other</option>
               </select>
             </div>
             <div class="col-md-6">
               <label class="mc-label">Event Date *</label>
               <input type="date" id="fDate" class="mc-input" required />
+            </div>
+            <div class="col-md-6">
+              <label class="mc-label">Event Time *</label>
+              <input type="time" id="fTime" class="mc-input" required />
             </div>
             <div class="col-md-6">
               <label class="mc-label">Number of Guests *</label>
@@ -164,6 +167,42 @@
             <div class="col-12">
               <label class="mc-label">Venue / Location *</label>
               <input type="text" id="fVenue" class="mc-input" placeholder="Full address of event venue" required />
+            </div>
+            <div class="col-md-6">
+              <label class="mc-label">Client Email</label>
+              <input type="email" id="fEmail" class="mc-input" placeholder="client@email.com" />
+            </div>
+            <div class="col-md-6">
+              <label class="mc-label">Client Phone</label>
+              <input type="tel" id="fPhone" class="mc-input" placeholder="09XX XXX XXXX" />
+            </div>
+            <div class="col-md-6">
+              <label class="mc-label">Event Duration</label>
+              <select id="fDuration" class="mc-input">
+                <option value="">Select duration...</option>
+                <option>2 hours</option>
+                <option>4 hours</option>
+                <option>6 hours</option>
+                <option>8 hours</option>
+                <option>Full day</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="mc-label">Venue Decoration</label>
+              <select id="fDecoration" class="mc-input">
+                <option value="no">No</option>
+                <option value="yes">Yes – include in package</option>
+                <option value="discuss">Discuss with team</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="mc-label">Theme / Color Preference</label>
+              <input type="text" id="fTheme" class="mc-input" placeholder="e.g. Red &amp; Gold" />
+            </div>
+            <div class="col-12">
+              <label class="mc-label">Special Requests / Dietary Restrictions</label>
+              <textarea id="fSpecialRequests" class="mc-input" rows="2"
+                placeholder="Allergies, special dishes, additional requests..."></textarea>
             </div>
           </div>
         </form>
@@ -207,6 +246,7 @@
       <td><strong>${b.client}</strong></td>
       <td style="color:var(--mc-gray);font-size:0.87rem;">${b.event}</td>
       <td style="white-space:nowrap;">${fmtDate(b.date)}</td>
+      <td style="white-space:nowrap;">${b.time || '—'}</td>
       <td>${b.guests}</td>
       <td><span style="font-weight:600;">${b.package}</span></td>
       <td style="font-size:0.82rem;color:var(--mc-gray);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${b.venue}">${b.venue}</td>
@@ -217,7 +257,7 @@
         <button class="btn-mc-icon danger" onclick="deleteBooking('${b.id}')" title="Delete"><i class="bi bi-trash-fill"></i></button>
       </td>
     </tr>`).join('')
-        : `<tr><td colspan="9"><div class="mc-empty"><div class="mc-empty-icon"><i class="bi bi-calendar-x"></i></div><p>No bookings found.</p></div></td></tr>`;
+        : `<tr><td colspan="10"><div class="mc-empty"><div class="mc-empty-icon"><i class="bi bi-calendar-x"></i></div><p>No bookings found.</p></div></td></tr>`;
     }
 
     function filterTable() {
@@ -242,13 +282,28 @@
     function viewBooking(id) {
       const b = MC_DATA.bookings.find(x => x.id == id);
       if (!b) return;
+      const fields = [
+        ['Client', b.client],
+        ['Event Type', b.event],
+        ['Date', fmtDate(b.date)],
+        ['Time', b.time || '—'],
+        ['Duration', b.duration || '—'],
+        ['Guests', b.guests],
+        ['Package', b.package],
+        ['Venue', b.venue],
+        ['Email', b.email || '—'],
+        ['Phone', b.phone || '—'],
+        ['Decoration', b.decoration || '—'],
+        ['Theme', b.theme || '—'],
+        ['Special Requests', b.special_requests || '—'],
+      ];
       document.getElementById('viewModalBody').innerHTML = `
     <div style="display:grid;gap:1rem;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <code style="background:var(--mc-bg);padding:4px 10px;border-radius:6px;">${b.id}</code>
         ${statusBadge(b.status)}
       </div>
-      ${[['Client', b.client], ['Event Type', b.event], ['Date', fmtDate(b.date)], ['Guests', b.guests], ['Package', b.package], ['Venue', b.venue]].map(([l, v]) => `
+      ${fields.map(([l, v]) => `
       <div style="border-bottom:1px solid var(--mc-border);padding-bottom:0.75rem;">
         <div style="font-size:0.75rem;color:var(--mc-gray);font-weight:600;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.2rem;">${l}</div>
         <div style="font-weight:500;">${v}</div>
@@ -265,10 +320,17 @@
       document.getElementById('fClient').value = b.client;
       document.getElementById('fEvent').value = b.event;
       document.getElementById('fDate').value = b.date;
+      document.getElementById('fTime').value = b.time || '';
       document.getElementById('fGuests').value = b.guests;
       document.getElementById('fPackage').value = b.package;
       document.getElementById('fStatus').value = b.status;
       document.getElementById('fVenue').value = b.venue;
+      document.getElementById('fEmail').value = b.email || '';
+      document.getElementById('fPhone').value = b.phone || '';
+      document.getElementById('fDuration').value = b.duration || '';
+      document.getElementById('fDecoration').value = b.decoration || 'no';
+      document.getElementById('fTheme').value = b.theme || '';
+      document.getElementById('fSpecialRequests').value = b.special_requests || '';
       openModal('addBookingModal');
     }
 
@@ -278,10 +340,17 @@
         client: document.getElementById('fClient').value.trim(),
         event: document.getElementById('fEvent').value,
         date: document.getElementById('fDate').value,
+        time: document.getElementById('fTime').value,
         guests: parseInt(document.getElementById('fGuests').value),
         package: document.getElementById('fPackage').value,
         status: document.getElementById('fStatus').value,
         venue: document.getElementById('fVenue').value.trim(),
+        email: document.getElementById('fEmail').value.trim(),
+        phone: document.getElementById('fPhone').value.trim(),
+        duration: document.getElementById('fDuration').value,
+        decoration: document.getElementById('fDecoration').value,
+        theme: document.getElementById('fTheme').value.trim(),
+        special_requests: document.getElementById('fSpecialRequests').value.trim(),
       };
       if (!data.client || !data.event || !data.date || !data.package || !data.venue) {
         showToast('Please fill in all required fields.', 'error'); return;
