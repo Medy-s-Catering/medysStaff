@@ -108,9 +108,6 @@
                 id="pwIcon"></i></button>
           </div>
         </div>
-        <div class="d-flex justify-content-end mb-3">
-          <a href="#" style="font-size:0.8rem;color:var(--mc-red);font-weight:600;">Forgot password?</a>
-        </div>
 
         <div id="loginError" class="alert alert-danger py-2 d-none" style="font-size:0.85rem;">
           <i class="bi bi-exclamation-triangle-fill me-1"></i> Invalid username or password.
@@ -146,7 +143,7 @@
     function togglePw() {
       const pw   = document.getElementById('password');
       const icon = document.getElementById('pwIcon');
-      const show = pw.type === 'password';
+      const show = pw.type == 'password';
       pw.type        = show ? 'text' : 'password';
       icon.className = show ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill';
     }
