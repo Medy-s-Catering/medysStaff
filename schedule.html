@@ -331,29 +331,36 @@
       if (view == 'list') renderListView();
     }
 
-    function quickAddEvent() {
+    async function quickAddEvent() {
       const client = document.getElementById('qClient').value.trim();
       const date = document.getElementById('qDate').value;
       if (!client || !date) { showToast('Client name and date are required.', 'error'); return; }
-      /* DATABASE NOTE: POST /api/bookings */
-      MC_DATA.bookings.push({
-        id: 'BK-' + String(MC_DATA.bookings.length + 1).padStart(3, '0'),
-        client, event: document.getElementById('qType').value,
-        date, time: document.getElementById('qTime').value || '',
-        guests: parseInt(document.getElementById('qGuests').value) || 0,
+      const payload = {
+        client_name: client,
+        event_type: document.getElementById('qType').value,
+        event_date: date,
+        event_time: document.getElementById('qTime').value || null,
+        guest_count: parseInt(document.getElementById('qGuests').value) || 0,
         package: document.getElementById('qPackage').value,
+        venue: document.getElementById('qVenue').value.trim() || '—',
         status: 'confirmed',
-        venue: document.getElementById('qVenue').value || '—'
-      });
-      closeModal('addBookingModal');
-      renderCalendar();
-      showToast('Event added to schedule!');
+      };
+      try {
+        await apiRequest('/bookings', { method: 'POST', body: JSON.stringify(payload) });
+        await loadPageData();
+        closeModal('addBookingModal');
+        renderCalendar();
+        showToast('Event added to schedule!');
+      } catch (e) {
+        showToast(e.message || 'Failed to add event.', 'error');
+      }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('sidebarMount').outerHTML = renderSidebar('schedule');
       document.getElementById('topbarMount').outerHTML = renderTopbar('Event Schedule', "Medy's Catering › Schedule");
       initSidebar();
+      await loadPageData();
       renderCalendar();
     });
   </script>

@@ -280,17 +280,21 @@
         : `<div class="col-12"><div class="mc-empty mc-card"><div class="mc-empty-icon"><i class="bi bi-chat-x"></i></div><p>No feedback found.</p></div></div>`;
     }
 
-    function markRead(id) {
-      /* DATABASE NOTE: PATCH /api/feedback/:id { status: 'read' } */
-      const f = MC_DATA.feedback.find(x => x.id == id);
-      if (f) { f.status = 'read'; renderFeedback(); renderStats(); showToast('Marked as read.'); }
+    async function markRead(id) {
+      try {
+        await apiRequest('/feedback/' + id, { method: 'PATCH', body: JSON.stringify({ status: 'read' }) });
+        await loadPageData();
+        renderFeedback(); renderStats(); showToast('Marked as read.');
+      } catch (e) { showToast(e.message || 'Failed to update.', 'error'); }
     }
 
-    function deleteFeedback(id) {
+    async function deleteFeedback(id) {
       if (!confirm('Delete this feedback?')) return;
-      /* DATABASE NOTE: DELETE /api/feedback/:id */
-      MC_DATA.feedback = MC_DATA.feedback.filter(x => x.id !== id);
-      renderFeedback(); renderStats(); showToast('Feedback deleted.', 'error');
+      try {
+        await apiRequest('/feedback/' + id, { method: 'DELETE' });
+        await loadPageData();
+        renderFeedback(); renderStats(); showToast('Feedback deleted.', 'error');
+      } catch (e) { showToast(e.message || 'Failed to delete.', 'error'); }
     }
 
     let selectedRating = 0;
@@ -300,7 +304,7 @@
       document.querySelectorAll('.mc-star-btn').forEach((b, i) => b.classList.toggle('active', i < val));
     }
 
-    function saveFeedback() {
+    async function saveFeedback() {
       const client = document.getElementById('ffClient').value.trim();
       const event_type = document.getElementById('ffEventType').value;
       const comments = document.getElementById('ffComments').value.trim();
@@ -310,25 +314,24 @@
       const has_booked = document.getElementById('ffHasBooked').value;
       const liked_tags = document.getElementById('ffLikedTags').value.trim();
       if (!client || !event_type || !comments || !star_rating) { showToast('Please fill in all required fields.', 'error'); return; }
-      /* DATABASE NOTE: POST /api/feedback
-         Fields match medysBook/feedback.html exactly:
-         client_name, email, event_type, has_booked, star_rating, comments, liked_tags, date_submitted, status */
-      MC_DATA.feedback.unshift({
-        id: MC_DATA.feedback.length + 1,
-        client, email, event_type, has_booked,
-        star_rating, comments, liked_tags,
-        date_submitted, status: 'new'
-      });
-      closeModal('addFeedbackModal');
-      ['ffClient', 'ffEmail', 'ffComments', 'ffDate', 'ffLikedTags'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('ffEventType').value = '';
-      document.getElementById('ffHasBooked').value = 'yes';
-      setRating(0);
-      renderFeedback(); renderStats();
-      showToast('Feedback recorded!');
+      try {
+        await apiRequest('/feedback', {
+          method: 'POST',
+          body: JSON.stringify({ client_name: client, email, event_type, has_booked, star_rating, comments, liked_tags, date_submitted }),
+        });
+        await loadPageData();
+        closeModal('addFeedbackModal');
+        ['ffClient', 'ffEmail', 'ffComments', 'ffDate', 'ffLikedTags'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('ffEventType').value = '';
+        document.getElementById('ffHasBooked').value = 'yes';
+        setRating(0);
+        renderFeedback(); renderStats();
+        showToast('Feedback recorded!');
+      } catch (e) { showToast(e.message || 'Failed to save feedback.', 'error'); }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadPageData();
       document.getElementById('sidebarMount').outerHTML = renderSidebar('feedback');
       document.getElementById('topbarMount').outerHTML = renderTopbar('Client Feedback', "Medy's Catering › Feedback");
       initSidebar();

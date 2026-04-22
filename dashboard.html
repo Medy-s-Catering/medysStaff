@@ -95,7 +95,7 @@
         <div class="mc-card mt-4">
           <div class="mc-section-hdr">
             <div class="mc-section-title">Monthly Bookings Overview</div>
-            <span style="font-size:0.78rem;color:var(--mc-gray);">2025</span>
+            <span id="chartYear" style="font-size:0.78rem;color:var(--mc-gray);"></span>
           </div>
           <div class="mc-chart-area" id="bookingsChart"></div>
           <div style="display:flex;justify-content:space-around;margin-top:0.5rem;" id="chartLabels"></div>
@@ -107,7 +107,8 @@
 
   <script src="assets/app.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadPageData();
 
       document.getElementById('sidebarMount').outerHTML = renderSidebar('dashboard');
       document.getElementById('topbarMount').outerHTML = renderTopbar('Dashboard', 'Medy\'s Catering › Dashboard');
@@ -187,9 +188,13 @@
 
       // BAR CHART
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      // DATABASE NOTE: Replace with actual monthly booking counts from your API
-      const vals = [3, 5, 4, 8, 6, 7, 12, 9, 0, 0, 0, 0];
-      const max = Math.max(...vals);
+      const curYear = new Date().getFullYear();
+      document.getElementById('chartYear').textContent = curYear;
+      const vals = months.map((_, i) => MC_DATA.bookings.filter(b => {
+        const d = new Date(b.date + 'T00:00:00');
+        return d.getFullYear() === curYear && d.getMonth() === i;
+      }).length);
+      const max = Math.max(...vals, 1);
 
       document.getElementById('bookingsChart').innerHTML = vals.map((v, i) => `
     <div class="mc-bar-wrap">

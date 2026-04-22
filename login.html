@@ -148,63 +148,48 @@
       icon.className = show ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill';
     }
 
-    function handleLogin(e) {
+    async function handleLogin(e) {
       e.preventDefault();
       const u   = document.getElementById('username').value.trim();
       const p   = document.getElementById('password').value;
       const err = document.getElementById('loginError');
 
-      // /* =====================================================
-      //    DATABASE NOTE (replace entire block below for production):
+      const btn = document.querySelector('.mc-login-btn') || document.querySelector('[type="submit"]');
+      if (btn) btn.disabled = true;
+      err.classList.add('d-none');
 
-      //    WHAT TO REPLACE:
-      //      Remove the "Mock auth" block and the demo credentials div above.
+      try {
+        const res = await fetch('http://localhost:8000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ username: u, password: p }),
+        });
 
-      //    REPLACE WITH:
-      //      const res = await fetch('/api/auth/login', {
-      //        method: 'POST',
-      //        headers: { 'Content-Type': 'application/json' },
-      //        body: JSON.stringify({ username: u, password: p, role: selectedRole })
-      //      });
-      //      const data = await res.json();
-      //      if (data.token) {
-      //        sessionStorage.clear();
-      //        sessionStorage.setItem('mc_token', data.token);      // JWT token
-      //        sessionStorage.setItem('mc_user', JSON.stringify(data.user)); // { name, role, initials }
-      //        window.location.href = 'dashboard.html';
-      //      } else {
-      //        err.classList.remove('d-none');
-      //      }
+        const data = await res.json();
 
-      //    ALSO REMOVE:
-      //      - The demo credentials <div> block above (marked <!-- REMOVE this demo block in production -->)
-      //      - The login-divider and demo div above the closing </div>
-      //    ===================================================== */
+        if (!res.ok) {
+          err.textContent = data.message || 'Invalid username or password.';
+          err.classList.remove('d-none');
+          document.getElementById('password').value = '';
+          return;
+        }
 
-      // /* ── MOCK AUTH — REMOVE IN PRODUCTION ──
-      //    Each role has its own fixed credentials.
-      //    Staff can ONLY log in as staff; admin can ONLY log in as admin.
-      //    The selectedRole variable ensures the correct role is always saved to session.
-      // */
-      const accounts = {
-        admin: { username: 'admin', password: 'admin123', name: 'Admin User', initials: 'AU' },
-        staff: { username: 'staff', password: 'staff123', name: 'Staff User', initials: 'SU' },
-      };
+        if (data.user.role !== selectedRole) {
+          err.textContent = `This account is not registered as ${selectedRole}.`;
+          err.classList.remove('d-none');
+          document.getElementById('password').value = '';
+          return;
+        }
 
-      const account = accounts[selectedRole];
-      const valid   = account && u == account.username && p == account.password;
-
-      if (valid) {
-        sessionStorage.clear(); 
-        sessionStorage.setItem('mc_user', JSON.stringify({
-          name:     account.name,
-          role:     selectedRole,   
-          initials: account.initials
-        }));
+        sessionStorage.clear();
+        sessionStorage.setItem('mc_token', data.token);
+        sessionStorage.setItem('mc_user', JSON.stringify(data.user));
         window.location.href = 'dashboard.html';
-      } else {
+      } catch (error) {
+        err.textContent = 'Network error. Please try again.';
         err.classList.remove('d-none');
-        document.getElementById('password').value = ''; 
+      } finally {
+        if (btn) btn.disabled = false;
       }
     }
 

@@ -1,22 +1,15 @@
 const API = 'http://localhost:8000/api';
-// When deployed, change this to: 'https://your-server.com/api'
 
 /* ============================================================
    MEDY'S CATERING – STAFF SYSTEM GLOBAL SCRIPTS
    app.js
    ============================================================ */
 
-/* ===================== AUTH GUARD =====================
-   Runs immediately on every page except index.html & login.html.
-   If no session is found, the user is redirected to login.
-   ======================================================= */
 (function authGuard() {
   const publicPages = ['login.html', 'index.html', ''];
   const currentPage = window.location.pathname.split('/').pop();
   if (publicPages.includes(currentPage)) return;
-
-  const sessionUser = sessionStorage.getItem('mc_user');
-  if (!sessionUser) {
+  if (!sessionStorage.getItem('mc_user')) {
     window.location.replace('login.html');
   }
 })();
@@ -28,61 +21,93 @@ function _getSessionUser() {
   catch (e) { return { name: 'Guest', role: 'staff', initials: 'G' }; }
 }
 
-/* ===================== MOCK DATA =====================
-   NOTE FOR BACKEND DATABASE:
-   Replace all arrays below with actual fetch() calls to your backend API.
-   
-   WHAT TO DO WHEN ADDING A REAL DATABASE:
-   1. REMOVE the entire MC_DATA object below (bookings & feedback arrays).
-   2. REMOVE the currentUser hardcoding — it is already read from sessionStorage above.
-   3. REPLACE each data reference with API calls. Examples:
-        const bookings = await fetch('/api/bookings', {
-          headers: { 'Authorization': 'Bearer ' + sessionStorage.getItem('mc_token') }
-        }).then(r => r.json());
-   4. REMOVE the Mock Auth block in login.html and replace with:
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password, role })
-        });
-        const data = await res.json();
-        if (data.token) {
-          sessionStorage.setItem('mc_token', data.token);
-          sessionStorage.setItem('mc_user', JSON.stringify(data.user));
-          window.location.href = 'dashboard.html';
-        }
-   5. REMOVE the demo credentials block in login.html (marked with <!-- REMOVE this demo block in production -->).
-   6. REPLACE the MC_STAFF array in accounts.html with: fetch('/api/accounts')
-   ===================================================== */
-
 const MC_DATA = {
-  // currentUser is always loaded from sessionStorage — never hardcoded
   currentUser: _getSessionUser(),
-
-  bookings: [
-    /* DATABASE NOTE: Replace this array with fetch('/api/bookings')
-       Full fields: id, client, event, date, time, guests, package, venue,
-       email, phone, duration, decoration, theme, special_requests, status */
-    { id: 'BK-001', client: 'Santos Family', event: 'Wedding / Reception', date: '2025-07-12', time: '14:00', guests: 150, package: 'Premium', status: 'confirmed', venue: 'Grand Ballroom, Lipa City', email: '', phone: '' },
-    { id: 'BK-002', client: 'ABC Corporation', event: 'Corporate Event', date: '2025-07-18', time: '09:00', guests: 80, package: 'Standard', status: 'confirmed', venue: 'Hotel Miramar, Batangas', email: '', phone: '' },
-    { id: 'BK-003', client: 'Reyes Family', event: 'Birthday / Debut', date: '2025-07-22', time: '16:00', guests: 60, package: 'Basic', status: 'pending', venue: 'Reyes Residence, Lipa', email: '', phone: '' },
-    { id: 'BK-004', client: 'PUP', event: 'School Activity', date: '2025-07-25', time: '10:00', guests: 200, package: 'Standard', status: 'confirmed', venue: 'PUP Gymnasium', email: '', phone: '' },
-    { id: 'BK-005', client: 'Cruz Family', event: 'Birthday / Debut', date: '2025-08-03', time: '17:00', guests: 100, package: 'Premium', status: 'pending', venue: 'Fiesta Garden, Lipa', email: '', phone: '' },
-    { id: 'BK-006', client: 'Dela Cruz Co.', event: 'Corporate Event', date: '2025-08-10', time: '09:00', guests: 120, package: 'Premium', status: 'confirmed', venue: 'Event Hall, Batangas City', email: '', phone: '' },
-    { id: 'BK-007', client: 'Garcia Family', event: 'Family Reunion', date: '2025-06-30', time: '11:00', guests: 75, package: 'Standard', status: 'completed', venue: 'Garcia Farm, Lipa', email: '', phone: '' },
-    { id: 'BK-008', client: 'Lima Family', event: 'Birthday / Debut', date: '2025-06-15', time: '15:00', guests: 50, package: 'Basic', status: 'cancelled', venue: 'Lim Residence', email: '', phone: '' },
-  ],
-
-  feedback: [
-    /* DATABASE NOTE: Replace this array with fetch('/api/feedback')
-       Fields match medysBook/feedback.html: client_name→client, event_type, star_rating,
-       comments, email, has_booked, liked_tags, date_submitted, status */
-    { id: 1, client: 'Santos Family', event_type: 'Wedding / Reception', date_submitted: '2025-07-13', star_rating: 5, comments: 'Everything was perfect! The food was amazing and the staff were very professional.', has_booked: 'yes', status: 'new' },
-    { id: 2, client: 'ABC Corporation', event_type: 'Corporate Event', date_submitted: '2025-07-19', star_rating: 4, comments: 'Great service and timely setup. Food was delicious. Would recommend!', has_booked: 'yes', status: 'read' },
-    { id: 3, client: 'Garcia Family', event_type: 'Family Reunion', date_submitted: '2025-07-01', star_rating: 5, comments: "Medy's Catering never disappoints. Will definitely book again.", has_booked: 'yes', status: 'read' },
-    { id: 4, client: 'PUP', event_type: 'School Activity', date_submitted: '2025-07-26', star_rating: 4, comments: 'The coordination was smooth and the food was well-received by everyone.', has_booked: 'yes', status: 'new' },
-  ]
+  bookings: [],
+  feedback: [],
 };
+
+/* ===================== API HELPERS ===================== */
+
+async function apiRequest(endpoint, options = {}) {
+  const token = sessionStorage.getItem('mc_token');
+  const res = await fetch(API + endpoint, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      ...(token ? { 'Authorization': 'Bearer ' + token } : {}),
+      ...(options.headers || {}),
+    },
+  });
+
+  if (res.status === 401) {
+    sessionStorage.clear();
+    window.location.href = 'login.html';
+    return null;
+  }
+
+  if (res.status === 204) return null;
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || 'Request failed');
+  }
+
+  return res.json();
+}
+
+function normalizeBooking(b) {
+  return {
+    id: b.id,
+    client: b.client_name,
+    event: b.event_type,
+    date: b.event_date,
+    time: b.event_time ? b.event_time.substring(0, 5) : '',
+    guests: b.guest_count,
+    package: b.package,
+    venue: b.venue,
+    email: b.email || '',
+    phone: b.phone || '',
+    alt_phone: b.alt_phone || '',
+    duration: b.duration || '',
+    decoration: b.decoration || 'no',
+    theme: b.theme || '',
+    special_requests: b.special_requests || '',
+    referral: b.referral || '',
+    status: b.status,
+  };
+}
+
+function normalizeFeedback(f) {
+  return {
+    id: f.id,
+    client: f.client_name,
+    event_type: f.event_type || '',
+    date_submitted: f.date_submitted,
+    star_rating: f.star_rating,
+    comments: f.comments,
+    email: f.email || '',
+    has_booked: f.has_booked || 'yes',
+    liked_tags: f.liked_tags || '',
+    status: f.status,
+  };
+}
+
+async function loadPageData() {
+  try {
+    const [bookings, feedback] = await Promise.all([
+      apiRequest('/bookings'),
+      apiRequest('/feedback'),
+    ]);
+    MC_DATA.bookings = (bookings || []).map(normalizeBooking);
+    MC_DATA.feedback = (feedback || []).map(normalizeFeedback);
+  } catch (e) {
+    console.error('Failed to load data:', e);
+  }
+}
+
+/* ===================== SIDEBAR ===================== */
 
 function initSidebar() {
   const toggle = document.querySelector('.mc-sidebar-toggle');
@@ -104,7 +129,6 @@ function initSidebar() {
   }
 }
 
-/* ===================== ACTIVE NAV ===================== */
 function setActiveNav() {
   const page = window.location.pathname.split('/').pop() || 'dashboard.html';
   document.querySelectorAll('.mc-nav-item[data-page]').forEach(item => {
@@ -112,7 +136,8 @@ function setActiveNav() {
   });
 }
 
-/* ===================== TOAST NOTIFICATION ===================== */
+/* ===================== TOAST ===================== */
+
 function showToast(msg, type = 'success') {
   let container = document.querySelector('.mc-toast-container');
   if (!container) {
@@ -148,9 +173,9 @@ function closeModal(id) {
 function statusBadge(status) {
   const map = {
     confirmed: ['mc-badge-confirmed', 'bi-check-circle-fill', 'Confirmed'],
-    pending: ['mc-badge-pending', 'bi-clock-fill', 'Pending'],
-    cancelled: ['mc-badge-cancelled', 'bi-x-circle-fill', 'Cancelled'],
-    completed: ['mc-badge-completed', 'bi-check2-all', 'Completed'],
+    pending:   ['mc-badge-pending',   'bi-clock-fill',        'Pending'],
+    cancelled: ['mc-badge-cancelled', 'bi-x-circle-fill',     'Cancelled'],
+    completed: ['mc-badge-completed', 'bi-check2-all',        'Completed'],
   };
   const [cls, icon, label] = map[status] || ['mc-badge-pending', 'bi-circle', 'Unknown'];
   return `<span class="mc-badge ${cls}"><i class="bi ${icon}"></i>${label}</span>`;
@@ -166,9 +191,9 @@ function fmtDate(str) {
 }
 
 function renderSidebar(activePage) {
-  const isAdmin = MC_DATA.currentUser.role === 'admin';
+  const isAdmin      = MC_DATA.currentUser.role === 'admin';
   const pendingCount = MC_DATA.bookings.filter(b => b.status === 'pending').length;
-  const newFeedback = MC_DATA.feedback.filter(f => f.status === 'new').length;
+  const newFeedback  = MC_DATA.feedback.filter(f => f.status === 'new').length;
 
   return `
   <aside class="mc-sidebar">
@@ -223,19 +248,13 @@ function renderSidebar(activePage) {
   <div class="mc-sidebar-overlay"></div>`;
 }
 
-/* ===================== LOGOUT =====================
-   Clears the session and redirects to login.
-   DATABASE NOTE: If using JWT tokens, also call POST /api/auth/logout
-   to invalidate the token on the server side before clearing sessionStorage.
-   ===================================================== */
-function handleLogout() {
-  /* DATABASE NOTE (for production):
-     await fetch('/api/auth/logout', {
-       method: 'POST',
-       headers: { 'Authorization': 'Bearer ' + sessionStorage.getItem('mc_token') }
-     });
-  */
-  sessionStorage.clear(); // KEEP THIS — clears all session data including user and token
+async function handleLogout() {
+  try {
+    await apiRequest('/auth/logout', { method: 'POST' });
+  } catch (e) {
+    // ignore — logout anyway
+  }
+  sessionStorage.clear();
   window.location.href = 'login.html';
 }
 
