@@ -60,6 +60,7 @@ async function apiRequest(endpoint, options = {}) {
 function normalizeBooking(b) {
   return {
     id: b.id,
+    client_id: b.client_id || '',
     client: b.client_name,
     event: b.event_type,
     date: b.event_date,

@@ -75,6 +75,7 @@
               <thead>
                 <tr>
                   <th>Booking ID</th>
+                  <th>Client ID</th>
                   <th>Client</th>
                   <th>Event Type</th>
                   <th>Date</th>
@@ -244,6 +245,7 @@
       tbody.innerHTML = data.length ? data.map(b => `
     <tr>
       <td><code style="background:var(--mc-bg);padding:2px 6px;border-radius:5px;font-size:0.8rem;">${b.id}</code></td>
+      <td><code style="background:var(--mc-bg);padding:2px 6px;border-radius:5px;font-size:0.8rem;">${b.client_id || '—'}</code></td>
       <td><strong>${b.client}</strong></td>
       <td style="color:var(--mc-gray);font-size:0.87rem;">${b.event}</td>
       <td style="white-space:nowrap;">${fmtDate(b.date)}</td>
@@ -258,7 +260,7 @@
         <button class="btn-mc-icon danger" onclick="deleteBooking('${b.id}')" title="Delete"><i class="bi bi-trash-fill"></i></button>
       </td>
     </tr>`).join('')
-        : `<tr><td colspan="10"><div class="mc-empty"><div class="mc-empty-icon"><i class="bi bi-calendar-x"></i></div><p>No bookings found.</p></div></td></tr>`;
+        : `<tr><td colspan="11"><div class="mc-empty"><div class="mc-empty-icon"><i class="bi bi-calendar-x"></i></div><p>No bookings found.</p></div></td></tr>`;
     }
 
     function filterTable() {
@@ -284,6 +286,7 @@
       const b = MC_DATA.bookings.find(x => x.id == id);
       if (!b) return;
       const fields = [
+        ['Client ID', b.client_id || '—'],
         ['Client', b.client],
         ['Event Type', b.event],
         ['Date', fmtDate(b.date)],
