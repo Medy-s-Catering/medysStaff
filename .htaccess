@@ -1,0 +1,24 @@
+Options -Indexes
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /medysStaff/
+
+  # Redirect old .html pages to .php (fixes browser cached redirects)
+  RewriteRule ^([^/]+)\.html$               $1.php                    [R=301,L]
+
+  # Auth
+  RewriteRule ^api/auth/login/?$             api/auth_login.php        [L,QSA]
+  RewriteRule ^api/auth/logout/?$            api/auth_logout.php       [L,QSA]
+
+  # Bookings – with and without :id
+  RewriteRule ^api/bookings/([0-9]+)/?$      api/bookings.php?id=$1    [L,QSA]
+  RewriteRule ^api/bookings/?$               api/bookings.php          [L,QSA]
+
+  # Feedback – with and without :id
+  RewriteRule ^api/feedback/([0-9]+)/?$      api/feedback.php?id=$1    [L,QSA]
+  RewriteRule ^api/feedback/?$               api/feedback.php          [L,QSA]
+
+  # Accounts – with and without :id
+  RewriteRule ^api/accounts/([0-9]+)/?$      api/accounts.php?id=$1    [L,QSA]
+  RewriteRule ^api/accounts/?$               api/accounts.php          [L,QSA]
+</IfModule>

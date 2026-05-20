@@ -1140,9 +1140,75 @@ a {
 }
 
 @media print {
-  .mc-sidebar, .mc-topbar, .mc-section-hdr .btn-mc-ghost,
-  .mc-topbar-btn, .mc-sidebar-toggle, .mc-sidebar-overlay { display: none !important; }
-  .mc-main { margin-left: 0 !important; }
-  .mc-content { padding: 0 !important; }
-  .mc-card { box-shadow: none !important; border: 1px solid #ddd !important; break-inside: avoid; }
+  /* ── Hide UI chrome ───────────────────────────────────────── */
+  .mc-sidebar, .mc-topbar, .mc-sidebar-overlay,
+  .mc-sidebar-toggle, .mc-topbar-btn,
+  .btn-mc-ghost, .btn-mc-primary, .btn-mc-outline,
+  .mc-input, select { display: none !important; }
+
+  /* ── Reset layout to single column ───────────────────────── */
+  .mc-layout  { display: block !important; }
+  .mc-main    { display: block !important; margin-left: 0 !important; width: 100% !important; }
+  .mc-content { padding: 0.25rem !important; }
+
+  /* ── Flatten Bootstrap grid – the main cause of overlap ──── */
+  .row {
+    display: block !important;
+    margin-left:  0 !important;
+    margin-right: 0 !important;
+  }
+  [class*="col-"] {
+    display:     block !important;
+    width:       100% !important;
+    max-width:   100% !important;
+    flex:        none !important;
+    padding-left:  0 !important;
+    padding-right: 0 !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* ── Cards ───────────────────────────────────────────────── */
+  .mc-card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    height: auto !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 0.75rem !important;
+  }
+  .h-100 { height: auto !important; }
+
+  /* ── Force background colors (bars, icons, badges) ───────── */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+
+  .mc-bar,
+  .mc-chart-area,
+  .mc-stat-icon,
+  .mc-badge,
+  .mc-rating-bar-fill,
+  [style*="background"] {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* ── Chart bars ───────────────────────────────────────────── */
+  .mc-chart-area {
+    display:     flex !important;
+    align-items: flex-end !important;
+    height:      160px !important;
+    background:  #fff8f7 !important;
+    border:      1px solid #eee !important;
+  }
+  .mc-bar-wrap { display: flex !important; flex-direction: column !important; align-items: center !important; flex: 1 !important; }
+  .mc-bar {
+    width:      100% !important;
+    background: #c0392b !important;
+    border:     1px solid #c0392b !important;
+    opacity:    1 !important;
+    transition: none !important;
+    min-height: 4px !important;
+  }
+  .mc-bar-val { font-size: 0.6rem !important; font-weight: 700 !important; color: #c0392b !important; }
 }

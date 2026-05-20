@@ -1,4 +1,4 @@
-const API = 'http://localhost:8000/api';
+const API = '/medysStaff/api';
 
 /* ============================================================
    MEDY'S CATERING – STAFF SYSTEM GLOBAL SCRIPTS
@@ -6,11 +6,11 @@ const API = 'http://localhost:8000/api';
    ============================================================ */
 
 (function authGuard() {
-  const publicPages = ['login.html', 'index.html', ''];
+  const publicPages = ['login.php', 'index.php', ''];
   const currentPage = window.location.pathname.split('/').pop();
   if (publicPages.includes(currentPage)) return;
   if (!sessionStorage.getItem('mc_user')) {
-    window.location.replace('login.html');
+    window.location.replace('login.php');
   }
 })();
 
@@ -30,20 +30,19 @@ const MC_DATA = {
 /* ===================== API HELPERS ===================== */
 
 async function apiRequest(endpoint, options = {}) {
-  const token = sessionStorage.getItem('mc_token');
   const res = await fetch(API + endpoint, {
     ...options,
+    credentials: 'same-origin',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      ...(token ? { 'Authorization': 'Bearer ' + token } : {}),
       ...(options.headers || {}),
     },
   });
 
   if (res.status === 401) {
     sessionStorage.clear();
-    window.location.href = 'login.html';
+    window.location.href = 'login.php';
     return null;
   }
 
@@ -131,7 +130,7 @@ function initSidebar() {
 }
 
 function setActiveNav() {
-  const page = window.location.pathname.split('/').pop() || 'dashboard.html';
+  const page = window.location.pathname.split('/').pop() || 'dashboard.php';
   document.querySelectorAll('.mc-nav-item[data-page]').forEach(item => {
     item.classList.toggle('active', item.dataset.page === page);
   });
@@ -208,21 +207,21 @@ function renderSidebar(activePage) {
 
     <nav class="mc-nav-section">
       <div class="mc-nav-label">Main</div>
-      <a href="dashboard.html" class="mc-nav-item ${activePage === 'dashboard' ? 'active' : ''}" data-page="dashboard.html">
+      <a href="dashboard.php" class="mc-nav-item ${activePage === 'dashboard' ? 'active' : ''}" data-page="dashboard.php">
         <span class="mc-nav-icon"><i class="bi bi-grid-fill"></i></span> Dashboard
       </a>
-      <a href="bookings.html" class="mc-nav-item ${activePage === 'bookings' ? 'active' : ''}" data-page="bookings.html">
+      <a href="bookings.php" class="mc-nav-item ${activePage === 'bookings' ? 'active' : ''}" data-page="bookings.php">
         <span class="mc-nav-icon"><i class="bi bi-calendar-check-fill"></i></span> Bookings
         ${pendingCount ? `<span class="mc-nav-badge">${pendingCount}</span>` : ''}
       </a>
-      <a href="schedule.html" class="mc-nav-item ${activePage === 'schedule' ? 'active' : ''}" data-page="schedule.html">
+      <a href="schedule.php" class="mc-nav-item ${activePage === 'schedule' ? 'active' : ''}" data-page="schedule.php">
         <span class="mc-nav-icon"><i class="bi bi-calendar3"></i></span> Event Schedule
       </a>
-      <a href="feedback.html" class="mc-nav-item ${activePage === 'feedback' ? 'active' : ''}" data-page="feedback.html">
+      <a href="feedback.php" class="mc-nav-item ${activePage === 'feedback' ? 'active' : ''}" data-page="feedback.php">
         <span class="mc-nav-icon"><i class="bi bi-chat-square-heart-fill"></i></span> Feedback
         ${newFeedback ? `<span class="mc-nav-badge">${newFeedback}</span>` : ''}
       </a>
-      <a href="reports.html" class="mc-nav-item ${activePage === 'reports' ? 'active' : ''}" data-page="reports.html">
+      <a href="reports.php" class="mc-nav-item ${activePage === 'reports' ? 'active' : ''}" data-page="reports.php">
         <span class="mc-nav-icon"><i class="bi bi-bar-chart-fill"></i></span> Reports
       </a>
     </nav>
@@ -230,7 +229,7 @@ function renderSidebar(activePage) {
     ${isAdmin ? `
     <nav class="mc-nav-section" style="margin-top:0.5rem;">
       <div class="mc-nav-label">Admin Only</div>
-      <a href="accounts.html" class="mc-nav-item ${activePage === 'accounts' ? 'active' : ''}" data-page="accounts.html">
+      <a href="accounts.php" class="mc-nav-item ${activePage === 'accounts' ? 'active' : ''}" data-page="accounts.php">
         <span class="mc-nav-icon"><i class="bi bi-people-fill"></i></span> Staff Accounts
       </a>
     </nav>` : ''}
@@ -256,7 +255,7 @@ async function handleLogout() {
     // ignore — logout anyway
   }
   sessionStorage.clear();
-  window.location.href = 'login.html';
+  window.location.href = 'login.php';
 }
 
 function renderTopbar(title, breadcrumb) {
@@ -277,7 +276,7 @@ function renderTopbar(title, breadcrumb) {
         <span class="mc-badge ${user.role === 'admin' ? 'mc-badge-admin' : 'mc-badge-staff'}">${user.role === 'admin' ? 'Admin' : 'Staff'}</span>
         <span>${user.name}</span>
       </span>
-      <button class="mc-topbar-btn" title="Feedback Notifications" onclick="window.location='feedback.html'">
+      <button class="mc-topbar-btn" title="Feedback Notifications" onclick="window.location='feedback.php'">
         <i class="bi bi-bell-fill"></i>
         ${newFeedback ? '<span class="mc-topbar-notif-dot"></span>' : ''}
       </button>
